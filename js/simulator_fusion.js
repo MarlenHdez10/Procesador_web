@@ -89,6 +89,8 @@ const COLORS = {
 // Elementos del DOM (variables globales ya declaradas)
 let svgElement, mainGroup;
 let codeEditor, pcValue, currentInstruction, instType, registerList, zoomLevel, svgContainer, logMessages;
+let followBinary = true;        // si true, seguimos al PC actual
+let binaryScrollLock = false;   // si true, NO movemos scroll (usuario está viendo arriba)
 
 // ==================== ENSAMBLADOR Y UTILIDADES ====================
 
@@ -722,6 +724,30 @@ function setupEventListeners() {
   svgContainer.addEventListener('mouseleave', () => {
     state.isDragging = false;
   });
+
+
+  const binaryListEl = document.getElementById('binaryList');
+
+binaryListEl.addEventListener('scroll', () => {
+  // Si el usuario está “casi” al fondo, seguimos.
+  const distanceToBottom = binaryListEl.scrollHeight - (binaryListEl.scrollTop + binaryListEl.clientHeight);
+  const nearBottom = distanceToBottom < 40; // 40px de tolerancia
+
+  followBinary = nearBottom;
+  binaryScrollLock = !nearBottom;
+});
+
+// Si el usuario usa la ruedita/trackpad, asumimos que quiere controlar él
+binaryListEl.addEventListener('wheel', () => {
+  binaryScrollLock = true;
+}, { passive: true });
+
+// (opcional) doble click para volver a “seguir”
+binaryListEl.addEventListener('dblclick', () => {
+  followBinary = true;
+  binaryScrollLock = false;
+});
+
 }
 
 function applyTransform() {
@@ -1051,8 +1077,15 @@ function updateRegisterDisplay() {
         `;
   }).join('');
 
-  registerList.innerHTML = html;
-  state.modifiedReg = -1;
+  const registerListEl = document.getElementById('registerList'); // o tu variable registerList
+const prev = registerListEl.scrollTop;
+
+registerListEl.innerHTML = html;
+
+registerListEl.scrollTop = prev;
+
+  // registerList.innerHTML = html;
+   state.modifiedReg = -1;
 }
 /**
  * Maneja el cambio manual de valor en un registro.
@@ -1115,6 +1148,12 @@ function updateMemoryDisplay() {
             </div>
         `;
   }
+  const memEl = document.getElementById('memoryList');
+const prev = memEl.scrollTop;
+
+memEl.innerHTML = html;
+
+memEl.scrollTop = prev;
 
   document.getElementById("memoryList").innerHTML = html;
 
@@ -1245,24 +1284,24 @@ function addSampleMenu() {
 
 function updateBinaryDisplay() {
   const binaryList = document.getElementById('binaryList');
-  
+
   if (!state.program || state.program.length === 0) {
     binaryList.innerHTML = '<div class="list-item">No hay programa cargado</div>';
     return;
   }
 
+  // ✅ guardamos scroll actual ANTES de repintar
+  const prevScrollTop = binaryList.scrollTop;
+
   let html = '';
-  
-  // Crear una fila para cada instrucción
   state.program.forEach((inst, index) => {
     const isCurrent = (index === state.pc);
     const currentClass = isCurrent ? 'current-instruction' : '';
     const instColor = COLORS[inst.type] || '#2196F3';
-    
-    // Formatear la instrucción binaria en grupos para mejor legibilidad
+
     const binary = inst.binary;
-    const formattedBinary = binary.match(/.{1,4}/g).join(' '); // Grupos de 4 bits
-    
+    const formattedBinary = binary.match(/.{1,4}/g).join(' ');
+
     html += `
       <div class="list-item ${currentClass}" style="
         ${isCurrent ? `border-left: 4px solid ${instColor}; background-color: ${instColor}10;` : ''}
@@ -1288,26 +1327,19 @@ function updateBinaryDisplay() {
             </div>
           </div>
         </div>
-        
-        ${isCurrent ? `
-        <div style="margin-top: 8px; padding: 6px; background-color: ${instColor}15; border-radius: 3px; font-size: 0.85em;">
-          <div style="display: flex; justify-content: space-between;">
-            <span>Opcode: <code>${binary.slice(25, 32)}</code></span>
-            <span>rd: x${parseInt(binary.slice(20, 25), 2)}</span>
-            <span>funct3: <code>${binary.slice(17, 20)}</code></span>
-            <span>rs1: x${parseInt(binary.slice(12, 17), 2)}</span>
-            <span>rs2: x${parseInt(binary.slice(7, 12), 2)}</span>
-            <span>funct7: <code>${binary.slice(0, 7)}</code></span>
-          </div>
-        </div>
-        ` : ''}
       </div>
     `;
   });
 
   binaryList.innerHTML = html;
-  
-  // Si hay muchas instrucciones, desplazar hasta la actual
+
+  // ✅ Si el usuario está viendo arriba, no lo molestamos: restauramos su scroll
+  if (binaryScrollLock || !followBinary) {
+    binaryList.scrollTop = prevScrollTop;
+    return;
+  }
+
+  // ✅ Si estamos en modo “seguir”, ahora sí centramos la instrucción actual
   if (state.pc >= 0) {
     const currentElement = binaryList.querySelector('.current-instruction');
     if (currentElement) {
@@ -1315,6 +1347,7 @@ function updateBinaryDisplay() {
     }
   }
 }
+
 setTimeout(addSampleMenu, 100);
 
 console.log("✅ Simulador RISC-V completamente inicializado");
