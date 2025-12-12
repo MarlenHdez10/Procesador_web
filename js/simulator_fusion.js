@@ -42,17 +42,23 @@ const SVG_ID_MAP = {
     'wire-mux-to-alu': ['k_13so6M85FCIRrfIg3Z-60', 'k_13so6M85FCIRrfIg3Z-88'],
     'wire-alu-result': ['k_13so6M85FCIRrfIg3Z-67'], 
     'wire-alu-to-dmem': ['k_13so6M85FCIRrfIg3Z-71', 'k_13so6M85FCIRrfIg3Z-73'],
-    'wire-wb-to-reg': ['k_13so6M85FCIRrfIg3Z-81'],
-    'wire-branch': ['k_13so6M85FCIRrfIg3Z-36', 'k_13so6M85FCIRrfIg3Z-20']
+    'wire-wb-to-reg': ['k_13so6M85FCIRrfIg3Z-104'],
+    'wire-branch': ['k_13so6M85FCIRrfIg3Z-36', 'k_13so6M85FCIRrfIg3Z-20'],
+    "tipoR":['k_13so6M85FCIRrfIg3Z-95','k_13so6M85FCIRrfIg3Z-61','k_13so6M85FCIRrfIg3Z-72','k_13so6M85FCIRrfIg3Z-71','k_13so6M85FCIRrfIg3Z-104','k_13so6M85FCIRrfIg3Z-41','k_13so6M85FCIRrfIg3Z-40','k_13so6M85FCIRrfIg3Z-36','k_13so6M85FCIRrfIg3Z-85','k_13so6M85FCIRrfIg3Z-84','k_13so6M85FCIRrfIg3Z-87','k_13so6M85FCIRrfIg3Z-81'],
+    "tipoI":['k_13so6M85FCIRrfIg3Z-80','k_13so6M85FCIRrfIg3Z-72','k_13so6M85FCIRrfIg3Z-71','k_13so6M85FCIRrfIg3Z-95','k_13so6M85FCIRrfIg3Z-61','k_13so6M85FCIRrfIg3Z-62','k_13so6M85FCIRrfIg3Z-87','k_13so6M85FCIRrfIg3Z-85','k_13so6M85FCIRrfIg3Z-84','k_13so6M85FCIRrfIg3Z-41','k_13so6M85FCIRrfIg3Z-40','k_13so6M85FCIRrfIg3Z-36'],
+    "tipoS":['k_13so6M85FCIRrfIg3Z-89','k_13so6M85FCIRrfIg3Z-64','k_13so6M85FCIRrfIg3Z-36','k_13so6M85FCIRrfIg3Z-40','k_13so6M85FCIRrfIg3Z-41','k_13so6M85FCIRrfIg3Z-72','k_13so6M85FCIRrfIg3Z-83','k_13so6M85FCIRrfIg3Z-61','k_13so6M85FCIRrfIg3Z-95','k_13so6M85FCIRrfIg3Z-67','k_13so6M85FCIRrfIg3Z-54','k_13so6M85FCIRrfIg3Z-92','k_13so6M85FCIRrfIg3Z-91','k_13so6M85FCIRrfIg3Z-79','k_13so6M85FCIRrfIg3Z-90','k_13so6M85FCIRrfIg3Z-80','k_13so6M85FCIRrfIg3Z-81','k_13so6M85FCIRrfIg3Z-82','k_13so6M85FCIRrfIg3Z-104','k_13so6M85FCIRrfIg3Z-85','k_13so6M85FCIRrfIg3Z-87'],
+    "tipoL":['k_13so6M85FCIRrfIg3Z-79','k_13so6M85FCIRrfIg3Z-87','k_13so6M85FCIRrfIg3Z-85','k_13so6M85FCIRrfIg3Z-62','k_13so6M85FCIRrfIg3Z-61','k_13so6M85FCIRrfIg3Z-95','k_13so6M85FCIRrfIg3Z-67','k_13so6M85FCIRrfIg3Z-72','k_13so6M85FCIRrfIg3Z-80','k_13so6M85FCIRrfIg3Z-89','k_13so6M85FCIRrfIg3Z-90','k_13so6M85FCIRrfIg3Z-36','k_13so6M85FCIRrfIg3Z-40','k_13so6M85FCIRrfIg3Z-41'],
+    "tipoB":['k_13so6M85FCIRrfIg3Z-81','k_13so6M85FCIRrfIg3Z-104','k_13so6M85FCIRrfIg3Z-72','k_13so6M85FCIRrfIg3Z-71','k_13so6M85FCIRrfIg3Z-67','k_13so6M85FCIRrfIg3Z-95','k_13so6M85FCIRrfIg3Z-61','k_13so6M85FCIRrfIg3Z-45','k_13so6M85FCIRrfIg3Z-39','k_13so6M85FCIRrfIg3Z-41','k_13so6M85FCIRrfIg3Z-94','k_13so6M85FCIRrfIg3Z-66','k_13so6M85FCIRrfIg3Z-85','k_13so6M85FCIRrfIg3Z-87','k_13so6M85FCIRrfIg3Z-65']
+
 };
 
 // Mapeo de qué cables encender por tipo de instrucción
 const WIRES_BY_TYPE = {
-    'R': ['wire-pc-to-imem', 'wire-imem-to-reg', 'wire-reg-rs1-to-alu', 'wire-reg-rs2-to-mux', 'wire-mux-to-alu', 'wire-alu-result', 'wire-wb-to-reg'],
-    'I': ['wire-pc-to-imem', 'wire-imem-to-reg', 'wire-imem-to-signext', 'wire-reg-rs1-to-alu', 'wire-mux-to-alu', 'wire-alu-result', 'wire-wb-to-reg'],
-    'L': ['wire-pc-to-imem', 'wire-imem-to-reg', 'wire-imem-to-signext', 'wire-reg-rs1-to-alu', 'wire-mux-to-alu', 'wire-alu-to-dmem', 'wire-wb-to-reg'],
-    'S': ['wire-pc-to-imem', 'wire-imem-to-reg', 'wire-imem-to-signext', 'wire-reg-rs1-to-alu', 'wire-mux-to-alu', 'wire-alu-to-dmem', 'wire-reg-rs2-to-mux'], // S necesita rs2
-    'B': ['wire-pc-to-imem', 'wire-imem-to-reg', 'wire-imem-to-signext', 'wire-reg-rs1-to-alu', 'wire-reg-rs2-to-mux', 'wire-mux-to-alu', 'wire-branch']
+    'R': ['tipoR','wire-pc-to-imem', 'wire-imem-to-reg', 'wire-reg-rs1-to-alu', 'wire-reg-rs2-to-mux', 'wire-mux-to-alu', 'wire-alu-result', 'wire-wb-to-reg'],
+    'I': ['tipoI','wire-pc-to-imem', 'wire-imem-to-reg', 'wire-imem-to-signext', 'wire-reg-rs1-to-alu', 'wire-mux-to-alu', 'wire-alu-result', 'wire-wb-to-reg'],
+    'L': ['tipoL','wire-pc-to-imem', 'wire-imem-to-reg', 'wire-reg-rs1-to-alu', 'wire-mux-to-alu', 'wire-alu-to-dmem', 'wire-wb-to-reg'],
+    'S': ['tipoS','wire-pc-to-imem',  'wire-mux-to-alu', 'wire-alu-to-dmem',], // S necesita rs2
+    'B': ['tipoB','wire-pc-to-imem', 'wire-reg-rs1-to-alu', 'wire-reg-rs2-to-mux', 'wire-mux-to-alu', 'wire-branch']
 };
 
 // ==================== ESTADO DEL SIMULADOR ====================
@@ -1008,6 +1014,7 @@ function updateUI() {
 
   updateRegisterDisplay();
   updateMemoryDisplay();
+  updateBinaryDisplay();
   updateZoomDisplay();
 }
 
@@ -1234,6 +1241,80 @@ function addSampleMenu() {
   });
 }
 
+// ==================== VISUALIZACIÓN DEL CÓDIGO BINARIO ====================
+
+function updateBinaryDisplay() {
+  const binaryList = document.getElementById('binaryList');
+  
+  if (!state.program || state.program.length === 0) {
+    binaryList.innerHTML = '<div class="list-item">No hay programa cargado</div>';
+    return;
+  }
+
+  let html = '';
+  
+  // Crear una fila para cada instrucción
+  state.program.forEach((inst, index) => {
+    const isCurrent = (index === state.pc);
+    const currentClass = isCurrent ? 'current-instruction' : '';
+    const instColor = COLORS[inst.type] || '#2196F3';
+    
+    // Formatear la instrucción binaria en grupos para mejor legibilidad
+    const binary = inst.binary;
+    const formattedBinary = binary.match(/.{1,4}/g).join(' '); // Grupos de 4 bits
+    
+    html += `
+      <div class="list-item ${currentClass}" style="
+        ${isCurrent ? `border-left: 4px solid ${instColor}; background-color: ${instColor}10;` : ''}
+        padding: 8px;
+        margin-bottom: 4px;
+        border-radius: 3px;
+      ">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="flex: 1;">
+            <div style="font-weight: ${isCurrent ? 'bold' : 'normal'}; color: ${instColor};">
+              ${isCurrent ? '➤ ' : ''}${inst.raw}
+            </div>
+            <div style="font-size: 0.8em; color: #666; margin-top: 2px;">
+              Tipo: <span style="color: ${instColor}; font-weight: bold;">${inst.type}</span>
+            </div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-family: 'Courier New', monospace; font-size: 0.85em;">
+              ${formattedBinary}
+            </div>
+            <div style="font-size: 0.75em; color: #888;">
+              PC: ${index} (0x${(index * 4).toString(16).padStart(3, '0')})
+            </div>
+          </div>
+        </div>
+        
+        ${isCurrent ? `
+        <div style="margin-top: 8px; padding: 6px; background-color: ${instColor}15; border-radius: 3px; font-size: 0.85em;">
+          <div style="display: flex; justify-content: space-between;">
+            <span>Opcode: <code>${binary.slice(25, 32)}</code></span>
+            <span>rd: x${parseInt(binary.slice(20, 25), 2)}</span>
+            <span>funct3: <code>${binary.slice(17, 20)}</code></span>
+            <span>rs1: x${parseInt(binary.slice(12, 17), 2)}</span>
+            <span>rs2: x${parseInt(binary.slice(7, 12), 2)}</span>
+            <span>funct7: <code>${binary.slice(0, 7)}</code></span>
+          </div>
+        </div>
+        ` : ''}
+      </div>
+    `;
+  });
+
+  binaryList.innerHTML = html;
+  
+  // Si hay muchas instrucciones, desplazar hasta la actual
+  if (state.pc >= 0) {
+    const currentElement = binaryList.querySelector('.current-instruction');
+    if (currentElement) {
+      currentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+}
 setTimeout(addSampleMenu, 100);
 
 console.log("✅ Simulador RISC-V completamente inicializado");
