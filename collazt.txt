@@ -1,0 +1,32 @@
+# collazt: 
+    
+        addi x5,  x0, 100      # t0 -> x5
+    addi x7,  x0, 0        # t2 -> x7
+
+loop:
+    sw   x5,  0(x6)        # t0 -> x5, t1 -> x6
+    addi x6,  x6, 4        # t1 -> x6
+    addi x7,  x7, 1        # t2 -> x7
+
+    # Verificar si n == 1
+    addi x28, x0, 1        # t3 -> x28
+    beq  x5,  x28, fin     # t0 -> x5
+
+    # Verificar si n es par (n & 1)
+    addi x29, x0, 1        # t4 -> x29
+    and  x30, x5, x29      # t5 -> x30
+    beq  x30, x0, es_par
+
+    # ---- Caso impar: n = 3n + 1 ----
+    slli x31, x5, 1        # t6 -> x31   (x31 = n*2)
+    add  x31, x31, x5      # x31 = 3n
+    addi x5,  x31, 1       # x5 = 3n + 1
+    beq  x0,  x0, loop     # salto incondicional
+
+es_par:
+    srli x5,  x5, 1        # n = n / 2
+    beq  x0,  x0, loop     # salto incondicional
+
+fin:
+   # nop
+
