@@ -369,24 +369,46 @@ footer p {
     opacity: 0.9;
 }
 
-.contenedor-ayuda{
-    text-align: right;
-    padding-left: 40px;
-}
+#btn {
+            /* Diseño general */
+            background: #FFD700;
+            /* Dorado o amarillo brillante para llamar la atención */
+            color: #2c3e50;
+            /* Texto oscuro para buen contraste */
+            border: none;
+            border-radius: 8px;
+            /* Bordes redondeados */
+            padding: 10px 20px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
 
-.help-button {
-    display: inline-block;
-    padding: 8px 14px;
-    background: #ffeb3b;
-    color: #333;
-    border-radius: 20px;
-    font-weight: bold;
-    text-decoration: none;
-    font-size: 0.85em;
-    transition: all 0.3s ease;
-}
+            /* Posicionamiento y Margen (para separarlo del título) */
+            margin-top: 15px;
+            display: inline-block;
+            /* Asegura que la transición funcione bien */
 
-.help-button:hover {
-    background: #fff176;
-    transform: scale(1.05);
-}
+            /* Sombra para darle profundidad */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 2. Estilo al pasar el ratón (Hover) */
+        #btn:hover {
+            background: #FFB800;
+            /* Un tono más oscuro de amarillo al pasar el ratón */
+            transform: translateY(-2px);
+            /* Pequeño levantamiento */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 3. Estilo al hacer clic (Active) */
+        #btn:active {
+            background: #E8A800;
+            /* Aún más oscuro para el efecto de "presionado" */
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+
+

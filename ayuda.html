@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía del Simulador RISC-V Datapath</title>
+    <style>
+        :root {
+            --primary-color: #4a4e69;
+            --secondary-color: #9a8c98;
+            --background-color: #f7f7ff;
+            --card-background: #ffffff;
+            --highlight-color: #4cc9f0;
+            --text-color: #22223b;
+            --active-tab-color: #667eea;
+            --border-radius: 12px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .simulator-guide-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--card-background);
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        /* --- HEADER Y BOTÓN DE AYUDA --- */
+        header {
+            display: flex; 
+            justify-content: space-between;
+            
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--highlight-color);
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            color: var(--primary-color);
+            font-size: 2em;
+            margin: 0;
+        }
+        
+        /* Estilos del Botón de Ayuda */
+        #btn {
+            background: #FFD700;
+            color: var(--text-color);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 18px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 0;
+        }
+
+        #btn:hover {
+            background: #FFB800;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* --- NAVEGACIÓN DE PESTAÑAS (TABS) --- */
+        .tab-navigation {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab-button {
+            flex-grow: 1;
+            padding: 15px 0;
+            text-align: center;
+            cursor: pointer;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--secondary-color);
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+
+        .tab-button.active {
+            color: var(--active-tab-color);
+            border-bottom-color: var(--active-tab-color);
+        }
+
+        /* --- CONTENIDO DE PESTAÑAS --- */
+        .tab-content-item {
+            display: none;
+            padding: 10px 0;
+        }
+
+        .tab-content-item.active {
+            display: block;
+        }
+
+        /* ======================================= */
+        /* --- ESTILOS DE SECCIONES (MEJORADOS) --- */
+        /* ======================================= */
+        
+        /* Estilos para las Secciones de Contenido General */
+        .layout-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            background-color: var(--card-background);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .layout-section:hover {
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Títulos de las Secciones */
+        .layout-section h2 {
+            color: var(--primary-color);
+            font-size: 1.6em;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        /* Estilos Específicos para la Barra Lateral (Sidebar) */
+        .sidebar-section {
+            border: 1px solid #e0e0e0;
+            border-left: 8px solid var(--secondary-color); 
+            background-color: #fcfcfc;
+        }
+
+        .sidebar-section h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Estilos Específicos para la Visualización del Datapath */
+        .datapath-section {
+            border: 1px solid #d0f4f9;
+            border-left: 8px solid var(--highlight-color); 
+            background-color: #f0fdff;
+            margin-top: 20px; /* Para separarlo de la sección superior */
+        }
+
+        .datapath-section h2 {
+            color: var(--highlight-color);
+            border-bottom: 2px solid var(--highlight-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        /* Grid de características (responsive por defecto) */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .feature-card {
+            background-color: var(--card-background);
+            border: 1px solid #f0f0f0;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-card h3 {
+            color: var(--primary-color);
+            font-size: 1.2em;
+            margin-top: 0;
+            border-bottom: 1px dashed #e0e0e0;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .highlight {
+            color: var(--highlight-color);
+            font-weight: bold;
+        }
+
+        /* --- Estilos de la Guía de Uso (Cómo Usarlo) --- */
+        .usage-step {
+            counter-increment: step-counter;
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #e9e9f0;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .usage-step h3 {
+            color: var(--active-tab-color);
+            font-size: 1.4em;
+            margin-top: 0;
+            padding-left: 90px; 
+            line-height: 1.2;
+        }
+        
+        .usage-step h3::before {
+            content: "Paso " counter(step-counter);
+            position: absolute;
+            left: 15px;
+            top: 20px;
+            background: var(--active-tab-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 50%;
+            font-size: 0.9em;
+            font-weight: 700;
+            line-height: 1;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .usage-step ul {
+            list-style-type: '👉 ';
+            padding-left: 40px;
+            margin-top: 10px;
+        }
+
+        .usage-step strong {
+            color: var(--text-color);
+        }
+        
+        /* ======================================= */
+        /* --- ESTILOS DE LA TABLA DE INSTRUCCIONES --- */
+        /* ======================================= */
+        
+        /* Estilos base de la tabla */
+        .instruction-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.95em;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Estilos para encabezados (th) */
+        .instruction-table th {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        /* Estilos para celdas de datos (td) */
+        .instruction-table td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        /* Estilo para las filas (alternando color para mejor lectura) */
+        .instruction-table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .instruction-table tbody tr:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Estilo para el mnemónico (hacerlo destacar) */
+        .mnemonic {
+            font-weight: bold;
+            color: var(--active-tab-color);
+            font-family: monospace;
+        }
+
+        /* Estilo para los títulos de sección dentro de la respuesta */
+        .instruction-group-title {
+            color: var(--primary-color);
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--highlight-color);
+            padding-bottom: 5px;
+            font-size: 1.5em;
+        }
+    </style>
+</head>
+<body>
+
+<div class="simulator-guide-container">
+    <header>
+        <h1>🎯 Simulador Datapath RISC-V</h1>
+        <button id="btn" type="button" onclick="window.location.href='index.html'">
+            Volver al inicio
+        </button>
+    </header>
+
+    <div class="tab-navigation">
+        <button class="tab-button active" data-tab="content">¿Qué Contiene?</button>
+        <button class="tab-button" data-tab="usage">¿Cómo Usarlo?</button>
+        <button class="tab-button" data-tab="instructions">Instrucciones Soportadas</button>
+    </div>
+
+    <div class="tab-content-container">
+        
+        <div id="content" class="tab-content-item active">
+            
+            <section class="layout-section sidebar-section">
+                <h2>I. Barra Lateral (Sidebar)</h2>
+                <p>Esta zona se enfoca en la interacción con el código y la visualización de los estados internos del procesador.</p>
+
+                <div class="features-grid">
+                    
+                    <div class="feature-card">
+                        <h3>1. Editor de Código </h3>
+                        <p><strong>Función:</strong> Es el área donde se puede escribir su código de ensamblador RISC-V.</p>
+                        <p><strong>Uso:</strong> Se ingresa el programa y se usa el botón "Cargar" para ensamblarlo y cargarlo en la Memoria de Instrucciones (IMEM).</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h3>2. Controles de Simulación</h3>
+                        <p>Permiten controlar la ejecución:</p>
+                        <ul>
+                            <li><strong>📂 Cargar:</strong> Ensambla y prepara el código.</li>
+                            <li><strong>⏭️ Paso:</strong> Ejecuta instrucción por instrucción</li>
+                            <li><strong>▶️ Ejecutar/Pausar:</strong> Inicia o pausa la ejecución automática.</li>
+                            <li><strong>🔄 Reiniciar:</strong> Reinicia el estado de la simulación.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h3>3. Estado del Procesador</h3>
+                        <p>Muestra información clave sobre la ejecución actual: <strong>PC (Program Counter)</strong>, la <strong>Instrucción</strong> siguiente (ensamblador/binario) y su <strong>Tipo</strong>.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h3>4. Registros Principales (Banco de Registros)</h3>
+                        <p>Muestra el contenido actual de los 32 registros (x0 a x31).</p>
+                        <p><strong>Modificables:</strong> <span class="highlight">Sí.</span> Se modifican dinámicamente. Los cambios son <span class="highlight">resaltados</span> temporalmente.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h3>5. Memoria de Datos (DMEM)</h3>
+                        <p>Muestra una porción de la memoria de datos (ej: 256 bytes).</p>
+                        <p><strong>Modificables:</strong> <span class="highlight">Sí.</span> Se modifican por instrucciones de escritura (<code>SW</code>). Los cambios son <span class="highlight">resaltados</span>.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h3>6. Registro de Eventos</h3>
+                        <p>Muestra mensajes informativos, de éxito o de error durante el ensamblaje o la ejecución.</p>
+                    </div>
+
+                </div>
+            </section>
+
+            <section class="layout-section datapath-section">
+                <h2>II. Visualización del Datapath</h2>
+                <p>El área principal contiene una representación visual (SVG) del Datapath de un procesador RISC-V. </p>
+                <p><strong>Componentes:</strong> Incluye los bloques fundamentales: PC, Memoria de Instrucciones (IMEM), Banco de Registros, Unidad Aritmético-Lógica (ALU), Memoria de Datos (DMEM), Unidad de Control, y Extensión de Inmediato.</p>
+                <p><strong>Flujo Activo:</strong> A medida que avanza la simulación, los cables y bloques se <span class="highlight">resaltan con colores y animaciones</span>, permitiendo visualizar el flujo de datos en tiempo real.</p>
+                <p><strong>Controles de Zoom:</strong> Incluye botones para acercar, alejar y restablecer el nivel de zoom.</p>
+            </section>
+        </div>
+
+        <div id="usage" class="tab-content-item">
+            
+            <div class="usage-step">
+                <h3>Escribir o Cargar el Código</h3>
+                <ul>
+                    <li><strong>Localiza el Editor de Código:</strong> En la sección lateral (Sidebar), encontrarás el área de texto grande.</li>
+                    <li><strong>Escribe tu Programa:</strong> Ingresa el código en ensamblador RISC-V que deseas simular.</li>
+                    <li><strong>Opcional - Usar Ejemplos:</strong> Si tienes la funcionalidad activada, selecciona un programa de la lista desplegable (ej. Fibonacci, Suma de Array) para cargar un código de demostración.</li>
+                </ul>
+            </div>
+
+            <div class="usage-step">
+                <h3>Ensamblar y Cargar</h3>
+                <ul>
+                    <li><strong>Haz clic en "Cargar" (Load):</strong> Presiona el botón 📂 Cargar.</li>
+                    <li><strong>Verifica el Estado:</strong> El simulador ensamblará el código y lo cargará en la Memoria de Instrucciones (IMEM).</li>
+                    <li><strong>Revisa el Log de Eventos:</strong> Asegúrate de que no haya errores de ensamblaje. El Program Counter (PC) debe inicializarse.</li>
+                </ul>
+            </div>
+
+            <div class="usage-step">
+                <h3>Inicialización Manual (Opcional)</h3>
+                <p>Si tu programa requiere datos preexistentes (como un array):</p>
+                <ul>
+                    <li><strong>Registros:</strong> Si la interfaz lo permite, establece valores iniciales para registros específicos.</li>
+                    <li><strong>Memoria de Datos (DMEM):</strong> Revisa la sección de Memoria de Datos para escribir valores iniciales (por ejemplo, los elementos de un array).</li>
+                </ul>
+            </div>
+
+            <div class="usage-step">
+                <h3>Ejecutar la Simulación</h3>
+                <p>Tienes dos modos de ejecución:</p>
+                <ul>
+                    <li><strong>Modo Paso a Paso (Recomendado para aprendizaje):</strong> Presiona <strong>⏭️ Paso</strong>. El simulador ejecuta una instrucción, actualiza el estado y <span class="highlight">resalta el flujo de datos</span> en el diagrama de Datapath.</li>
+                    <li><strong>Modo Automático:</strong> Presiona <strong>▶️ Ejecutar</strong>. El programa se ejecuta continuamente. Usa <strong>⏸️ Pausar</strong> para detener la ejecución.</li>
+                </ul>
+            </div>
+
+            <div class="usage-step">
+                <h3>Observar y Analizar los Resultados</h3>
+                <p>Pon atención a:</p>
+                <ul>
+                    <li><strong>Visualización del Datapath:</strong> Observa cómo las líneas y bloques se <span class="highlight">resaltan</span> para entender el flujo de la instrucción actual.</li>
+                    <li><strong>Estado del Procesador:</strong> Sigue los cambios en el <strong>PC</strong> y la <strong>Instrucción</strong> actual.</li>
+                    <li><strong>Datos Modificables:</strong> Mira cómo los valores en los <strong>Registros</strong> y la <strong>Memoria de Datos (DMEM)</strong> cambian y se <span class="highlight">resaltan</span> después de cada operación de escritura.</li>
+                </ul>
+            </div>
+
+            <div class="usage-step">
+                <h3>Reiniciar</h3>
+                <ul>
+                    <li>Presiona el botón <strong>🔄 Reiniciar</strong> para limpiar todos los estados del simulador (PC, Registros y Memoria) y prepararlo para un nuevo programa.</li>
+                </ul>
+            </div>
+
+        </div>
+        
+        <div id="instructions" class="tab-content-item">
+            <div id="instrucciones-soportadas" class="layout-section sidebar-section">
+                <h2>Instrucciones RISC-V Soportadas por el Simulador</h2>
+                <p>Basado en la configuración del simulador, estas son las instrucciones que el ensamblador reconoce y que el Datapath puede ejecutar:</p>
+
+                <h3 class="instruction-group-title">1. Instrucciones Tipo R (Registro-Registro)</h3>
+                <p>Operaciones aritméticas y lógicas que usan dos registros fuente (<span class="mnemonic">rs1</span>, <span class="mnemonic">rs2</span>).</p>
+                <table class="instruction-table">
+                    <thead>
+                        <tr>
+                            <th>Mnemónico</th>
+                            <th>Operación</th>
+                            <th>Descripción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="mnemonic">ADD</td>
+                            <td>R-Type</td>
+                            <td>Suma</td>
+                        </tr>
+                        <tr>
+                            <td class="mnemonic">SUB</td>
+                            <td>R-Type</td>
+                            <td>Resta</td>
+                        </tr>
+                        <tr>
+                            <td class="mnemonic">AND</td>
+                            <td>R-Type</td>
+                            <td>AND bit a bit</td>
+                        </tr>
+                        <tr>
+                            <td class="mnemonic">OR</td>
+                            <td>R-Type</td>
+                            <td>OR bit a bit</td>
+                        </tr>
+                        <tr>
+                            <td class="mnemonic">XOR</td>
+                            <td>R-Type</td>
+                            <td>XOR bit a bit</td>
+                        </tr>
+                        <tr>
+                            <td class="mnemonic">SLT</td>
+                            <td>R-Type</td>
+                            <td>Set Less Than (con signo)</td>
+                        </tr>
+                        <tr>
+                            <td class="mnemonic">SLTU</td>
+                            <td>R-Type</td>
+                            <td>Set Less Than Unsigned (sin signo)</td>
+                        </tr>
+                        <tr>
+                            <td class="mnemonic">SLL</td>
+                            <td>R-Type</td>
+                            <td>Desplazamiento Lógico a la Izquierda</td>
+                        </tr>
+                        <tr>
+                            <td class="mnemonic">SRL</td>
+                            <td>R-Type</td>
+                            <td>Desplazamiento Lógico a la Derecha</td>
+                        </tr>
+                        <tr>
+                            <td class="mnemonic">SRA</td>
+                            <td>R-Type</td>
+                            <td>Desplazamiento Aritmético a la Derecha</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 class="instruction-group-title">2. Instrucciones Tipo I (Inmediato)</h3>
+                <p>Operaciones aritméticas y lógicas que usan un registro fuente (<span class="mnemonic">rs1</span>) y un valor inmediato.</p>
+                <table class="instruction-table">
+                    <thead>
+                        <tr>
+                            <th>Mnemónico</th>
+                            <th>Operación</th>
+                            <th>Descripción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="mnemonic">ADDI</td>
+                            <td>I-Type</td>
+                            <td>Suma con Inmediato</td>
+                        </tr>
+                        <tr>
+                            <td class="mnemonic">ANDI</td>
+                            <td>I-Type</td>
+                            <td>AND con Inmediato</td>
+                        </tr>
+                        <tr>
+                            <td class="mnemonic">ORI</td>
+                            <td>I-Type</td>
+                            <td>OR con Inmediato</td>
+                        </tr>
+                        <tr>
+                            <td class="mnemonic">XORI</td>
+                            <td>I-Type</td>
+                            <td>XOR con Inmediato</td>
+                        </tr>
+                        <tr>
+                            <td class="mnemonic">SLTI</td>
+                            <td>I-Type</td>
+                            <td>Set Less Than con Inmediato</td>
+                        </tr>
+                        <tr>
+                            <td class="mnemonic">SLTUI</td>
+                            <td>I-Type</td>
+                            <td>Set Less Than Unsigned con Inmediato</td>
+                        </tr>
+                        <tr>
+                            <td class="mnemonic">SLLI</td>
+                            <td>I-Type</td>
+                            <td>Desplazamiento Lógico a la Izquierda con Inmediato</td>
+                        </tr>
+                        <tr>
+                            <td class="mnemonic">SRLI</td>
+                            <td>I-Type</td>
+                            <td>Desplazamiento Lógico a la Derecha con Inmediato</td>
+                        </tr>
+                        <tr>
+                            <td class="mnemonic">SRAI</td>
+                            <td>I-Type</td>
+                            <td>Desplazamiento Aritmético a la Derecha con Inmediato</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 class="instruction-group-title">3. Instrucciones de Memoria (Load/Store)</h3>
+                <p>Instrucciones para mover datos entre Registros y la Memoria de Datos (DMEM).</p>
+                <table class="instruction-table">
+                    <thead>
+                        <tr>
+                            <th>Mnemónico</th>
+                            <th>Tipo</th>
+                            <th>Función</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="mnemonic">LW</td>
+                            <td>I-Type (Load)</td>
+                            <td>Cargar Palabra (Load Word)</td>
+                        </tr>
+                        <tr>
+                            <td class="mnemonic">SW</td>
+                            <td>S-Type (Store)</td>
+                            <td>Almacenar Palabra (Store Word)</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3 class="instruction-group-title">4. Instrucciones de Control de Flujo (Branch)</h3>
+                <p>Instrucciones que evalúan una condición y potencialmente cambian el flujo de ejecución.</p>
+                <table class="instruction-table">
+                    <thead>
+                        <tr>
+                            <th>Mnemónico</th>
+                            <th>Tipo</th>
+                            <th>Condición</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="mnemonic">BEQ</td>
+                            <td>B-Type</td>
+                            <td>Branch if Equal (Bifurcar si son iguales)</td>
+                        </tr>
+                        <tr>
+                            <td class="mnemonic">BNE</td>
+                            <td>B-Type</td>
+                            <td>Branch if Not Equal (Bifurcar si son diferentes)</td>
+                        </tr>
+                        <tr>
+                            <td class="mnemonic">BLT</td>
+                            <td>B-Type</td>
+                            <td>Branch if Less Than (Bifurcar si es menor)</td>
+                        </tr>
+                        <tr>
+                            <td class="mnemonic">BGE</td>
+                            <td>B-Type</td>
+                            <td>Branch if Greater than or Equal (Bifurcar si es mayor o igual)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content-item');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetTab = button.getAttribute('data-tab');
+
+                // Desactivar todos los botones
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // Ocultar todos los contenidos
+                tabContents.forEach(content => content.classList.remove('active'));
+
+                // Activar el botón clicado
+                button.classList.add('active');
+                
+                // Mostrar el contenido correspondiente
+                document.getElementById(targetTab).classList.add('active');
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
